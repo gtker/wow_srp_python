@@ -1,0 +1,18 @@
+[package]
+name = "wow_srp_python"
+version = "0.1.0"
+edition = "2021"
+repository = "https://www.github.com/gtker/wow_srp_python"
+authors = ["Gtker <github@gtker.com>"]
+description = "Server and client library for the World of Warcraft flavor of SRP6 with support for reconnection."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "wow_srp"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.19.0"
+wow_srp = { version = "0.6.0", features = ["srp-default-math"] }

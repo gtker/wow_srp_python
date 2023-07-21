@@ -1,0 +1,21 @@
+[build-system]
+requires = ["maturin>=1.1,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "wow_srp"
+version = "0.1.0"
+description = "Cryptography library for authenticating with World of Warcraft 1.2-3.3.5 clients."
+authors = [{name = "Gtker", email = "pip@gtker.com"}]
+requires-python = ">=3.7"
+license = { file = "LICENSE-MIT" }
+keywords = ["wow", "srp"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
