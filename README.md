@@ -4,6 +4,14 @@ SRP6 library for Python that supports WoW version 1.2 through to 3.3.5.
 
 This is just a Python wrapper [around the original `wow_srp` library](https://github.com/gtker/wow_srp).
 
+# Installation
+
+Install from [PyPI](https://pypi.org/project/wow-srp/) with pip:
+
+```bash
+pip install wow-srp
+```
+
 # Usage
 
 ## Authentication
