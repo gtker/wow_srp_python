@@ -6,9 +6,11 @@ This is just a Python wrapper [around the original `wow_srp` library](https://gi
 
 # Usage
 
+## Authentication
+
 The module is split into functionality used by a server implementation and a client implementation.
 
-## Server
+### Server
 
 ```text
 SrpVerifier -> SrpProof -> SrpServer
@@ -76,7 +78,7 @@ by any third party and it should not be implemented in a production auth server.
 >>> # reconnect_valid = server.verify_reconnection_attempt(client_challenge_data, client_proof)
 ```
 
-## Client
+### Client
 
 ```text
 SrpClientUser -> SrpClientChallenge -> SrpClient | -> SrpClientReconnection
@@ -127,14 +129,70 @@ And then access the reconnect values from `reconnect_data`:
 >>> # client_proof = reconnect_data.client_proof()
 ```
 
-## Development
+## Header Encryption
+
+### Server
+
+First, create a `ProofSeed` from for the version that you need:
+
+```python
+>>> server_seed = vanilla_header.ProofSeed()
+>>> server_seed_value = server_seed.seed()
+```
+
+Then send the value to the client in
+[SMSG_AUTH_CHALLENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html).
+
+After receiving [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html)
+from the client, convert the proof to a `HeaderCrypto`.
+
+```python
+>>> # server_crypto = server_seed.into_server_header_crypto(username, session_key, client_proof, client_seed)
+```
+
+You can then encrypt and decrypt message headers with
+
+```python
+>>> # data = server_crypto.encrypt_server_header(size, opcode)
+>>> # size, opcode = server_crypto.decrypt_client_header(data)
+```
+
+### Client
+
+First, create a `ProofSeed` from for the version that you need:
+
+```python
+>>> client_seed = vanilla_header.ProofSeed()
+>>> client_seed_value = client_seed.seed()
+```
+
+Then convert the seed to a `HeaderCrypto` using the seed received from
+[SMSG_AUTH_CHALLENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html).
+
+```python
+>>> # client_proof, client_crypto = client_seed.into_client_header_crypto(username, session_key, server_seed)
+```
+
+Then send the `client_proof` and `client_seed_value` to the server through
+[CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html).
+
+You can then encrypt and decrypt message headers with
+
+```python
+>>> # data = client_crypto.encrypt_client_header(size, opcode)
+>>> # size, opcode = client_crypto.decrypt_server_header(data)
+```
+
+# Development
 
 ```bash
 pip install maturin
 curl https://pyenv.run | bash
+
 # For fish
 set -U PYENV_ROOT "$HOME/.pyenv"
 fish_add_path "$PYENV_ROOT/bin"
+
 pyenv init - | source
 pyenv install 3.10
 pyenv virtualenv 3.10 pyo3

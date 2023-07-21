@@ -1,13 +1,18 @@
 mod client;
 mod server;
+mod tbc_header;
+mod vanilla_header;
 
 use pyo3::prelude::*;
 
-/// Module that implements the SRP6 algorithm used for World of Warcraft versions 1.0 through to 3.3.5.
+/// Module that implements the SRP6 algorithm as well as the message header encryptiong
+/// used for World of Warcraft versions 1.0 through to 3.3.5.
+///
+/// # Authentication
 ///
 /// The module is split into functionality used by a server implementation and a client implementation.
 ///
-/// # Server
+/// ## Server
 ///
 /// ```
 /// SrpVerifier -> SrpProof -> SrpServer
@@ -65,7 +70,7 @@ use pyo3::prelude::*;
 /// >>> client_proof = [0] * 20 # Arbitrary data to show usage
 /// >>> # reconnect_valid = server.verify_reconnection_attempt(client_challenge_data, client_proof)
 ///
-/// # Client
+/// ## Client
 ///
 /// ```
 /// SrpClientUser -> SrpClientChallenge -> SrpClient | -> SrpClientReconnection
@@ -106,8 +111,50 @@ use pyo3::prelude::*;
 /// >>> # challenge_data = reconnect_data.challenge_data()
 /// >>> # client_proof = reconnect_data.client_proof()
 ///
+/// # Header Encryption
+///
+/// ## Server
+///
+/// First, create a `ProofSeed` from for the version that you need:
+///
+/// >>> server_seed = vanilla_header.ProofSeed()
+/// >>> server_seed_value = server_seed.seed()
+///
+/// Then send the value to the client in
+/// [SMSG_AUTH_CHALLENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html).
+///
+/// After receiving [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html)
+/// from the client, convert the proof to a `HeaderCrypto`.
+///
+/// >>> # server_crypto = server_seed.into_server_header_crypto(username, session_key, client_proof, client_seed)
+///
+/// You can then encrypt and decrypt message headers with
+///
+/// >>> # data = server_crypto.encrypt_server_header(size, opcode)
+/// >>> # size, opcode = server_crypto.decrypt_client_header(data)
+///
+/// ## Client
+///
+/// First, create a `ProofSeed` from for the version that you need:
+///
+/// >>> client_seed = vanilla_header.ProofSeed()
+/// >>> client_seed_value = client_seed.seed()
+///
+/// Then convert the seed to a `HeaderCrypto` using the seed received from
+/// [SMSG_AUTH_CHALLENGE](https://gtker.com/wow_messages/docs/smsg_auth_challenge.html).
+///
+/// >>> # client_proof, client_crypto = client_seed.into_client_header_crypto(username, session_key, server_seed)
+///
+/// Then send the `client_proof` and `client_seed_value` to the server through
+/// [CMSG_AUTH_SESSION](https://gtker.com/wow_messages/docs/cmsg_auth_session.html).
+///
+/// You can then encrypt and decrypt message headers with
+///
+/// >>> # data = client_crypto.encrypt_client_header(size, opcode)
+/// >>> # size, opcode = client_crypto.decrypt_server_header(data)
+///
 #[pymodule]
-fn wow_srp(_py: Python, m: &PyModule) -> PyResult<()> {
+fn wow_srp(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(server::generator, m)?)?;
     m.add_function(wrap_pyfunction!(server::large_safe_prime, m)?)?;
 
@@ -119,6 +166,20 @@ fn wow_srp(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<client::SrpClient>()?;
     m.add_class::<client::SrpClientChallenge>()?;
     m.add_class::<client::SrpClientReconnection>()?;
+
+    let vanilla_header = PyModule::new(py, "vanilla_header")?;
+
+    vanilla_header.add_class::<vanilla_header::ProofSeed>()?;
+    vanilla_header.add_class::<vanilla_header::HeaderCrypto>()?;
+
+    m.add_submodule(vanilla_header)?;
+
+    let tbc_header = PyModule::new(py, "tbc_header")?;
+
+    tbc_header.add_class::<tbc_header::ProofSeed>()?;
+    tbc_header.add_class::<tbc_header::HeaderCrypto>()?;
+
+    m.add_submodule(tbc_header)?;
 
     Ok(())
 }
