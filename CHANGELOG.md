@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+## [0.2.0] - 2023-08-05
+
 ### Added
 
 * `vanilla_header`, `tbc_header`, and `wrath_header` modules.
@@ -25,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Initial relase.
 
 <!-- next-url -->
-[Unreleased]: https://github.com/gtker/wow_srp/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/gtker/wow_srp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/gtker/wow_srp/compare/v0.1.1...0.2.0
 [0.1.1]: https://github.com/gtker/wow_srp_python/releases/tag/v0.1.1
 [0.1.0]: https://github.com/gtker/wow_srp_python/releases/tag/v0.1.0
