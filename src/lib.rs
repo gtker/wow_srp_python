@@ -2,6 +2,7 @@ mod client;
 mod server;
 mod tbc_header;
 mod vanilla_header;
+mod wrath_header;
 
 use pyo3::prelude::*;
 
@@ -168,18 +169,20 @@ fn wow_srp(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<client::SrpClientReconnection>()?;
 
     let vanilla_header = PyModule::new(py, "vanilla_header")?;
-
     vanilla_header.add_class::<vanilla_header::ProofSeed>()?;
     vanilla_header.add_class::<vanilla_header::HeaderCrypto>()?;
-
     m.add_submodule(vanilla_header)?;
 
     let tbc_header = PyModule::new(py, "tbc_header")?;
-
     tbc_header.add_class::<tbc_header::ProofSeed>()?;
     tbc_header.add_class::<tbc_header::HeaderCrypto>()?;
-
     m.add_submodule(tbc_header)?;
+
+    let wrath_header = PyModule::new(py, "wrath_header")?;
+    wrath_header.add_class::<wrath_header::ProofSeed>()?;
+    wrath_header.add_class::<wrath_header::ServerCrypto>()?;
+    wrath_header.add_class::<wrath_header::ClientCrypto>()?;
+    m.add_submodule(wrath_header)?;
 
     Ok(())
 }

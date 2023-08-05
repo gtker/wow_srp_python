@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `vanilla_header` and `tbc_header` modules.
+* `vanilla_header`, `tbc_header`, and `wrath_header` modules.
 
 ## [0.1.1] - 2023-07-21
 
