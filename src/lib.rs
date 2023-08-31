@@ -118,7 +118,7 @@ use pyo3::prelude::*;
 ///
 /// First, create a `ProofSeed` from for the version that you need:
 ///
-/// >>> server_seed = vanilla_header.ProofSeed()
+/// >>> server_seed = VanillaProofSeed()
 /// >>> server_seed_value = server_seed.seed()
 ///
 /// Then send the value to the client in
@@ -138,7 +138,7 @@ use pyo3::prelude::*;
 ///
 /// First, create a `ProofSeed` from for the version that you need:
 ///
-/// >>> client_seed = vanilla_header.ProofSeed()
+/// >>> client_seed = VanillaProofSeed()
 /// >>> client_seed_value = client_seed.seed()
 ///
 /// Then convert the seed to a `HeaderCrypto` using the seed received from
@@ -155,7 +155,7 @@ use pyo3::prelude::*;
 /// >>> # size, opcode = client_crypto.decrypt_server_header(data)
 ///
 #[pymodule]
-fn wow_srp(py: Python, m: &PyModule) -> PyResult<()> {
+fn wow_srp(_: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(server::generator, m)?)?;
     m.add_function(wrap_pyfunction!(server::large_safe_prime, m)?)?;
 
@@ -168,21 +168,15 @@ fn wow_srp(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<client::SrpClientChallenge>()?;
     m.add_class::<client::SrpClientReconnection>()?;
 
-    let vanilla_header = PyModule::new(py, "vanilla_header")?;
-    vanilla_header.add_class::<vanilla_header::ProofSeed>()?;
-    vanilla_header.add_class::<vanilla_header::HeaderCrypto>()?;
-    m.add_submodule(vanilla_header)?;
+    m.add_class::<vanilla_header::VanillaProofSeed>()?;
+    m.add_class::<vanilla_header::VanillaHeaderCrypto>()?;
 
-    let tbc_header = PyModule::new(py, "tbc_header")?;
-    tbc_header.add_class::<tbc_header::ProofSeed>()?;
-    tbc_header.add_class::<tbc_header::HeaderCrypto>()?;
-    m.add_submodule(tbc_header)?;
+    m.add_class::<tbc_header::TbcProofSeed>()?;
+    m.add_class::<tbc_header::TbcHeaderCrypto>()?;
 
-    let wrath_header = PyModule::new(py, "wrath_header")?;
-    wrath_header.add_class::<wrath_header::ProofSeed>()?;
-    wrath_header.add_class::<wrath_header::ServerCrypto>()?;
-    wrath_header.add_class::<wrath_header::ClientCrypto>()?;
-    m.add_submodule(wrath_header)?;
+    m.add_class::<wrath_header::WrathProofSeed>()?;
+    m.add_class::<wrath_header::WrathServerCrypto>()?;
+    m.add_class::<wrath_header::WrathClientCrypto>()?;
 
     Ok(())
 }

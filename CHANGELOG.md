@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+* Type hints for all classes and functions.
+
+### Changed
+
+* BREAKING: Moved types from `vanilla_header`, `tbc_header`, and `wrath_header` modules into main `wow_srp` module.
+They are now prefixed with the version, for example `VanillaProofSeed` instead of `vanilla_header.ProofSeed`.
+This is in order for everything to work correctly with type hints.
+
 ## [0.2.0] - 2023-08-05
 
 ### Added

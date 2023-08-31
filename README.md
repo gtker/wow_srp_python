@@ -144,7 +144,7 @@ And then access the reconnect values from `reconnect_data`:
 First, create a `ProofSeed` from for the version that you need:
 
 ```python
->>> server_seed = vanilla_header.ProofSeed()
+>>> server_seed = VanillaProofSeed()
 >>> server_seed_value = server_seed.seed()
 ```
 
@@ -170,7 +170,7 @@ You can then encrypt and decrypt message headers with
 First, create a `ProofSeed` from for the version that you need:
 
 ```python
->>> client_seed = vanilla_header.ProofSeed()
+>>> client_seed = VanillaProofSeed()
 >>> client_seed_value = client_seed.seed()
 ```
 

@@ -10,12 +10,12 @@ use wow_srp::wrath_header::{
 use wow_srp::{PROOF_LENGTH, SESSION_KEY_LENGTH};
 
 #[pyclass]
-pub struct ProofSeed {
+pub struct WrathProofSeed {
     inner: InnerSeed,
 }
 
 #[pymethods]
-impl ProofSeed {
+impl WrathProofSeed {
     #[new]
     pub fn new() -> Self {
         Self {
@@ -33,18 +33,21 @@ impl ProofSeed {
         session_key: [u8; SESSION_KEY_LENGTH as _],
         client_proof: [u8; PROOF_LENGTH as _],
         client_seed: u32,
-    ) -> PyResult<ServerCrypto> {
+    ) -> PyResult<WrathServerCrypto> {
         let s = self.inner.clone();
 
         let Ok(username) = NormalizedString::new(username) else {
-            return Err(PyValueError::new_err("username contains invalid characters"));
+            return Err(PyValueError::new_err(
+                "username contains invalid characters",
+            ));
         };
 
-        let Ok(inner) = s.into_header_crypto(&username, session_key, client_proof, client_seed) else {
+        let Ok(inner) = s.into_header_crypto(&username, session_key, client_proof, client_seed)
+        else {
             return Err(PyValueError::new_err("proofs do not match"));
         };
 
-        Ok(ServerCrypto { inner })
+        Ok(WrathServerCrypto { inner })
     }
 
     pub fn into_client_header_crypto(
@@ -52,26 +55,28 @@ impl ProofSeed {
         username: &str,
         session_key: [u8; SESSION_KEY_LENGTH as _],
         server_seed: u32,
-    ) -> PyResult<([u8; PROOF_LENGTH as _], ClientCrypto)> {
+    ) -> PyResult<([u8; PROOF_LENGTH as _], WrathClientCrypto)> {
         let s = self.inner.clone();
 
         let Ok(username) = NormalizedString::new(username) else {
-            return Err(PyValueError::new_err("username contains invalid characters"));
+            return Err(PyValueError::new_err(
+                "username contains invalid characters",
+            ));
         };
 
         let (proof, inner) = s.into_proof_and_header_crypto(&username, session_key, server_seed);
 
-        Ok((proof, ClientCrypto { inner }))
+        Ok((proof, WrathClientCrypto { inner }))
     }
 }
 
 #[pyclass]
-pub struct ServerCrypto {
+pub struct WrathServerCrypto {
     inner: InnerServerCrypto,
 }
 
 #[pymethods]
-impl ServerCrypto {
+impl WrathServerCrypto {
     pub fn encrypt_server_header(&mut self, size: u32, opcode: u16) -> Vec<u8> {
         let mut v = Vec::with_capacity(SERVER_HEADER_MAXIMUM_LENGTH as _);
 
@@ -90,12 +95,12 @@ impl ServerCrypto {
 }
 
 #[pyclass]
-pub struct ClientCrypto {
+pub struct WrathClientCrypto {
     inner: InnerClientCrypto,
 }
 
 #[pymethods]
-impl ClientCrypto {
+impl WrathClientCrypto {
     pub fn decrypt_server_header(&mut self, data: Vec<u8>) -> PyResult<(u32, u16)> {
         let data: [u8; SERVER_HEADER_MAXIMUM_LENGTH as _] =
             if data.len() == SERVER_HEADER_MAXIMUM_LENGTH as usize {

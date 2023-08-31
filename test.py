@@ -33,10 +33,10 @@ assert s.verify_reconnection_attempt(r.challenge_data(), r.client_proof())
 
 ## Vanilla
 
-server_seed = wow_srp.vanilla_header.ProofSeed()
+server_seed = wow_srp.VanillaProofSeed()
 server_seed_value = server_seed.seed()
 
-client_seed = wow_srp.vanilla_header.ProofSeed()
+client_seed = wow_srp.VanillaProofSeed()
 client_seed_value = client_seed.seed()
 
 proof, client_crypto = client_seed.into_client_header_crypto(username, c.session_key(), server_seed_value)
@@ -57,10 +57,10 @@ assert opcode == 0x06050403
 
 ## TBC
 
-server_seed = wow_srp.tbc_header.ProofSeed()
+server_seed = wow_srp.TbcProofSeed()
 server_seed_value = server_seed.seed()
 
-client_seed = wow_srp.tbc_header.ProofSeed()
+client_seed = wow_srp.TbcProofSeed()
 client_seed_value = client_seed.seed()
 
 proof, client_crypto = client_seed.into_client_header_crypto(username, c.session_key(), server_seed_value)
@@ -81,10 +81,10 @@ assert opcode == 0x06050403
 
 ## wrath
 
-server_seed = wow_srp.wrath_header.ProofSeed()
+server_seed = wow_srp.WrathProofSeed()
 server_seed_value = server_seed.seed()
 
-client_seed = wow_srp.wrath_header.ProofSeed()
+client_seed = wow_srp.WrathProofSeed()
 client_seed_value = client_seed.seed()
 
 proof, client_crypto = client_seed.into_client_header_crypto(username, c.session_key(), server_seed_value)
