@@ -80,18 +80,16 @@ use pyo3::prelude::*;
 ///
 /// The client does not have to save any values except for the username and password.
 ///
-/// >>> username = "A"
-/// >>> password = "A"
-/// >>> client = SrpClientUser(username, password)
-///
 /// After getting the `generator`, `large_safe_prime`, `server_public_key`, and `salt` from the server,
 /// the `SrpClientUser` can be converted into an `SrpClientChallenge`.
 ///
+/// >>> username = "A"
+/// >>> password = "A"
 /// >>> generator = 7
 /// >>> large_safe_prime = [1] * 32
 /// >>> server_public_key = [1] * 32
 /// >>> salt = [0] * 32
-/// >>> client = client.into_challenge(generator, large_safe_prime, server_public_key, salt)
+/// >>> client = SrpClientChallenge(username, password, generator, large_safe_prime, server_public_key, salt)
 ///
 /// The client can then verify that the server also has the correct password through the `server_proof`:
 /// This creates an `SrpClient`.
@@ -163,7 +161,6 @@ fn wow_srp(_: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<server::SrpProof>()?;
     m.add_class::<server::SrpServer>()?;
 
-    m.add_class::<client::SrpClientUser>()?;
     m.add_class::<client::SrpClient>()?;
     m.add_class::<client::SrpClientChallenge>()?;
     m.add_class::<client::SrpClientReconnection>()?;

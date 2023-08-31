@@ -21,8 +21,7 @@ p = v.into_proof()
 assert len(p.salt()) == 32
 assert len(p.server_public_key()) == 32
 
-c = wow_srp.SrpClientUser(username, password)
-c = c.into_challenge(wow_srp.generator(), wow_srp.large_safe_prime(), p.server_public_key(), p.salt())
+c = wow_srp.SrpClientChallenge(username, password, wow_srp.generator(), wow_srp.large_safe_prime(), p.server_public_key(), p.salt())
 
 (s, proof) = p.into_server(c.client_public_key(), c.client_proof())
 

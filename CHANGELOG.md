@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+### Removed
+
+* BREAKING: Removed `SrpClientUser`. This has been replaced by the constructor on `SrpClientChallenge`.
+
 ## [0.3.0] - 2023-08-31
 
 ### Added

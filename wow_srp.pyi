@@ -178,6 +178,15 @@ class SrpClient(object):
     def session_key(self) -> list[int] : ...
 
 class SrpClientChallenge(object):
+    @staticmethod
+    def __new__(cls, username: str, password: str, generator: int, large_safe_prime: byte_type, server_public_key: byte_type, salt: byte_type) -> SrpClientChallenge:
+        """ Create and return a new object.  See help(type) for accurate signature. """
+        ...
+
+    def __init__(cls, username: str, password: str, generator: int, large_safe_prime: byte_type, server_public_key: byte_type, salt: byte_type) -> SrpClientChallenge:
+        """ Create and return a new object.  See help(type) for accurate signature. """
+        ...
+
     # no doc
     def client_proof(self) -> list[int]: ...
 
@@ -191,18 +200,6 @@ class SrpClientReconnection(object):
     def challenge_data(self) -> list[int]: ...
 
     def client_proof(self) -> list[int]: ...
-
-
-class SrpClientUser(object):
-    def into_challenge(self, generator: int, large_safe_prime: byte_type, server_public_key: byte_type, salt: byte_type) -> SrpClientChallenge: ...
-
-    def __init__(self, username: str, password: str) -> SrpClientUser:
-        ...
-
-    @staticmethod
-    def __new__(cls, username: str, password: str) -> SrpClientUser:
-        """ Create and return a new object.  See help(type) for accurate signature. """
-        ...
 
 
 class SrpProof(object):

@@ -11,52 +11,43 @@ use wow_srp::{
 };
 
 #[pyclass]
-pub struct SrpClientUser {
-    inner: InnerClientUser,
-}
-
-#[pymethods]
-impl SrpClientUser {
-    #[new]
-    pub fn new(username: &str, password: &str) -> PyResult<Self> {
-        let Ok(username) = NormalizedString::new(username) else {
-            return Err(PyValueError::new_err("username contains invalid characters"));
-        };
-        let Ok(password) = NormalizedString::new(password) else {
-            return Err(PyValueError::new_err("password contains invalid characters"));
-        };
-
-        Ok(Self {
-            inner: InnerClientUser::new(username, password),
-        })
-    }
-
-    pub fn into_challenge(
-        &self,
-        generator: u8,
-        large_safe_prime: [u8; LARGE_SAFE_PRIME_LENGTH as usize],
-        server_public_key: [u8; PUBLIC_KEY_LENGTH as usize],
-        salt: [u8; SALT_LENGTH as usize],
-    ) -> PyResult<SrpClientChallenge> {
-        let Ok(server_public_key) = PublicKey::from_le_bytes(server_public_key) else {
-            return Err(PyValueError::new_err("invalid public key"));
-        };
-
-        let s = self.inner.clone();
-
-        Ok(SrpClientChallenge {
-            inner: s.into_challenge(generator, large_safe_prime, server_public_key, salt),
-        })
-    }
-}
-
-#[pyclass]
 pub struct SrpClientChallenge {
     inner: InnerClientChallenge,
 }
 
 #[pymethods]
 impl SrpClientChallenge {
+    #[new]
+    pub fn new(
+        username: &str,
+        password: &str,
+        generator: u8,
+        large_safe_prime: [u8; LARGE_SAFE_PRIME_LENGTH as usize],
+        server_public_key: [u8; PUBLIC_KEY_LENGTH as usize],
+        salt: [u8; SALT_LENGTH as usize],
+    ) -> PyResult<Self> {
+        let Ok(username) = NormalizedString::new(username) else {
+            return Err(PyValueError::new_err(
+                "username contains invalid characters",
+            ));
+        };
+        let Ok(password) = NormalizedString::new(password) else {
+            return Err(PyValueError::new_err(
+                "password contains invalid characters",
+            ));
+        };
+
+        let Ok(server_public_key) = PublicKey::from_le_bytes(server_public_key) else {
+            return Err(PyValueError::new_err("invalid public key"));
+        };
+
+        let s = InnerClientUser::new(username, password);
+
+        Ok(SrpClientChallenge {
+            inner: s.into_challenge(generator, large_safe_prime, server_public_key, salt),
+        })
+    }
+
     pub fn client_proof(&self) -> [u8; PROOF_LENGTH as usize] {
         *self.inner.client_proof()
     }
