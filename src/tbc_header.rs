@@ -39,7 +39,8 @@ impl TbcProofSeed {
             ));
         };
 
-        let Ok(inner) = s.into_header_crypto(&username, session_key, client_proof, client_seed)
+        let Ok(inner) =
+            s.into_server_header_crypto(&username, session_key, client_proof, client_seed)
         else {
             return Err(PyValueError::new_err("proofs do not match"));
         };
@@ -61,7 +62,7 @@ impl TbcProofSeed {
             ));
         };
 
-        let (proof, inner) = s.into_proof_and_header_crypto(&username, session_key, server_seed);
+        let (proof, inner) = s.into_client_header_crypto(&username, session_key, server_seed);
 
         Ok((proof, TbcHeaderCrypto { inner }))
     }

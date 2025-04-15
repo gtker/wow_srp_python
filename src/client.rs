@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use wow_srp::client::SrpClient as InnerClient;
 use wow_srp::client::SrpClientChallenge as InnerClientChallenge;
 use wow_srp::client::SrpClientReconnection as InnerClientReconnection;
-use wow_srp::client::SrpClientUser as InnerClientUser;
 use wow_srp::normalized_string::NormalizedString;
 use wow_srp::{
     PublicKey, LARGE_SAFE_PRIME_LENGTH, PROOF_LENGTH, PUBLIC_KEY_LENGTH,
@@ -41,10 +40,15 @@ impl SrpClientChallenge {
             return Err(PyValueError::new_err("invalid public key"));
         };
 
-        let s = InnerClientUser::new(username, password);
-
         Ok(SrpClientChallenge {
-            inner: s.into_challenge(generator, large_safe_prime, server_public_key, salt),
+            inner: InnerClientChallenge::new(
+                username,
+                password,
+                generator,
+                large_safe_prime,
+                server_public_key,
+                salt,
+            ),
         })
     }
 
@@ -78,7 +82,7 @@ pub struct SrpClient {
 #[pymethods]
 impl SrpClient {
     pub fn session_key(&self) -> [u8; SESSION_KEY_LENGTH as usize] {
-        self.inner.session_key()
+        *self.inner.session_key()
     }
 
     pub fn calculate_reconnect_values(

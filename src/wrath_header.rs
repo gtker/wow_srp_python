@@ -2,11 +2,10 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use wow_srp::normalized_string::NormalizedString;
 use wow_srp::wrath_header::{
-    ClientCrypto as InnerClientCrypto, ServerCrypto as InnerServerCrypto, CLIENT_HEADER_LENGTH,
+    ClientCrypto as InnerClientCrypto, ServerCrypto as InnerServerCrypto, WrathServerAttempt,
+    CLIENT_HEADER_LENGTH,
 };
-use wow_srp::wrath_header::{
-    ProofSeed as InnerSeed, SERVER_HEADER_MAXIMUM_LENGTH, SERVER_HEADER_MINIMUM_LENGTH,
-};
+use wow_srp::wrath_header::{ProofSeed as InnerSeed, SERVER_HEADER_MAXIMUM_LENGTH};
 use wow_srp::{PROOF_LENGTH, SESSION_KEY_LENGTH};
 
 #[pyclass]
@@ -42,7 +41,8 @@ impl WrathProofSeed {
             ));
         };
 
-        let Ok(inner) = s.into_header_crypto(&username, session_key, client_proof, client_seed)
+        let Ok(inner) =
+            s.into_server_header_crypto(&username, session_key, client_proof, client_seed)
         else {
             return Err(PyValueError::new_err("proofs do not match"));
         };
@@ -64,7 +64,7 @@ impl WrathProofSeed {
             ));
         };
 
-        let (proof, inner) = s.into_proof_and_header_crypto(&username, session_key, server_seed);
+        let (proof, inner) = s.into_client_header_crypto(&username, session_key, server_seed);
 
         Ok((proof, WrathClientCrypto { inner }))
     }
@@ -102,22 +102,27 @@ pub struct WrathClientCrypto {
 #[pymethods]
 impl WrathClientCrypto {
     pub fn decrypt_server_header(&mut self, data: Vec<u8>) -> PyResult<(u32, u16)> {
-        let data: [u8; SERVER_HEADER_MAXIMUM_LENGTH as _] =
-            if data.len() == SERVER_HEADER_MAXIMUM_LENGTH as usize {
-                data.try_into().unwrap()
-            } else if data.len() == SERVER_HEADER_MINIMUM_LENGTH as usize {
-                let mut d = [0_u8; SERVER_HEADER_MAXIMUM_LENGTH as usize];
-
-                for (i, b) in data.iter().enumerate() {
-                    d[i] = *b;
-                }
-
-                d
-            } else {
+        let s = match data.as_slice() {
+            [a, b, c, d] | [a, b, c, d, ..] => [*a, *b, *c, *d],
+            _ => {
                 return Err(PyValueError::new_err("data length is invalid"));
-            };
+            }
+        };
 
-        let h = self.inner.decrypt_server_header(&data);
+        match self.inner.attempt_decrypt_server_header(s) {
+            WrathServerAttempt::Header(h) => {
+                return Ok((h.size, h.opcode));
+            }
+            WrathServerAttempt::AdditionalByteRequired => {}
+        }
+
+        let Some(&last) = data.get(5) else {
+            return Err(PyValueError::new_err(
+                "missing 5th byte for header, the crypto is now invalid",
+            ));
+        };
+
+        let h = self.inner.decrypt_large_server_header(last);
 
         Ok((h.size, h.opcode))
     }

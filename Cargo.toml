@@ -15,4 +15,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.24.1"
-wow_srp = { version = "0.6.0", features = ["srp-default-math"] }
+wow_srp = { version = "0.7.0", features = ["srp-default-math"] }
