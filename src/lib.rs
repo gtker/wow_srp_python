@@ -153,7 +153,7 @@ use pyo3::prelude::*;
 /// >>> # size, opcode = client_crypto.decrypt_server_header(data)
 ///
 #[pymodule]
-fn wow_srp(_: Python, m: &PyModule) -> PyResult<()> {
+fn wow_srp(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(server::generator, m)?)?;
     m.add_function(wrap_pyfunction!(server::large_safe_prime, m)?)?;
 
