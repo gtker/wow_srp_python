@@ -14,5 +14,5 @@ name = "wow_srp"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.24.1"
+pyo3 = "0.29.2"
 wow_srp = { version = "0.7.0", features = ["srp-default-math"] }
