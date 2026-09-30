@@ -8,10 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+### Changed
+
+* Updated `pyo3` from 0.24.1 to 0.29.2, which adds support for Python 3.14.
+
 ### Fixed
 
 * Type hints for `into_client_header_crypto` on `VanillaProofSeed`, `TbcProofSeed`, and `WrathProofSeed` now return the `(proof, crypto)` tuple instead of only the header crypto.
 * Add `dynamic = ["version"]` to `pyproject.toml` so that `maturin develop` works with newer maturin versions.
+* Type hints for byte array return values now use `bytes` instead of `list[int]`, matching what is returned at runtime.
+* Type hints no longer use invalid `(int, int)` tuple syntax, and `__init__` methods now return `None`.
+* Type hints for `SrpProof.into_server` and `SrpClientChallenge.verify_server_proof` now include their return types.
 
 ## [0.4.0] - 2024-11-12
 
