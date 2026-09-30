@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Type hints for `into_client_header_crypto` on `VanillaProofSeed`, `TbcProofSeed`, and `WrathProofSeed` now return the `(proof, crypto)` tuple instead of only the header crypto.
+* Add `dynamic = ["version"]` to `pyproject.toml` so that `maturin develop` works with newer maturin versions.
 
 ## [0.4.0] - 2024-11-12
 

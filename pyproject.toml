@@ -4,6 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "wow_srp"
+dynamic = ["version"]
 description = "Cryptography library for authenticating with World of Warcraft 1.2-3.3.5 clients."
 authors = [{name = "Gtker", email = "pip@gtker.com"}]
 requires-python = ">=3.7"
