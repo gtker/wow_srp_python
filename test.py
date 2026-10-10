@@ -96,6 +96,13 @@ size, opcode = client_crypto.decrypt_server_header(data)
 assert size == 0x0102
 assert opcode == 0x0403
 
+data = server_crypto.encrypt_server_header(0x010203, 0x0405)
+assert len(data) == 5
+size, opcode = client_crypto.decrypt_server_header(data)
+
+assert size == 0x010203
+assert opcode == 0x0405
+
 data = client_crypto.encrypt_client_header(0x0102, 0x06050403)
 size, opcode = server_crypto.decrypt_client_header(data)
 
