@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+### Fixed
+
+* `WrathClientCrypto.decrypt_server_header` now reads the 5th byte of large server headers (size of `0x8000` or more) from the correct index. Previously decrypting any 5 byte header always raised a `ValueError`.
+
 ## [0.5.0] - 2026-10-01
 
 ### Changed

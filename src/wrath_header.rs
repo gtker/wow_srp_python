@@ -116,7 +116,7 @@ impl WrathClientCrypto {
             WrathServerAttempt::AdditionalByteRequired => {}
         }
 
-        let Some(&last) = data.get(5) else {
+        let Some(&last) = data.get(4) else {
             return Err(PyValueError::new_err(
                 "missing 5th byte for header, the crypto is now invalid",
             ));
